@@ -1,6 +1,4 @@
-subroutine User_initBlobCell(xx, yy, zz, unkArr)
     use Simulation_data, ONLY: sim_smallRho, sim_smallx, sim_radiusPerturb, sim_usePseudo1d, &
-       sim_rotVel, sim_xAtm, &
        sim_rhoPerturb, sim_tempPerturb, sim_velPerturb, &
        sim_xCenterPerturb, sim_yCenterPerturb, sim_zCenterPerturb, &
        pos_vec, dens_vec, npts, sim_velyPerturb, sim_nChunks, &
@@ -76,20 +74,14 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
            if (dists(i) .LE. chunkRad) then
               inChunk = .true.
               unkArr(TEMP_VAR) = sim_tempPerturb
-              do l = 1, npts
-                  if (xx .lt. pos_vec(l)) then
-                      coeff = (xx - pos_vec(l-1))/(pos_vec(l) - pos_vec(l-1))
-                      unkArr(PRES_VAR) = pres_vec(l-1) + coeff*(pres_vec(l) - pres_vec(l-1))
-                      exit
-                  endif
-              enddo
+              unkArr(PRES_VAR) = sim_presAmbient
               eosData(EOS_DENS) = sim_rhoPerturb !guess
               eosData(EOS_TEMP) = unkArr(TEMP_VAR)
               eosData(EOS_PRES) = unkArr(PRES_VAR)
               call Eos(MODE_PRES_TEMP,1,eosData,sim_xf)
               unkArr(DENS_VAR) = eosData(EOS_DENS)
-              unkArr(VELX_VAR) = sim_velPerturb*dcos(sim_chunkAngle)
-              unkArr(VELY_VAR) = sim_velPerturb*dsin(sim_chunkAngle)
+              unkArr(VELX_VAR) = sim_velPerturb
+              unkArr(VELY_VAR) = 0.d0
               unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xf
            endif
        else
@@ -108,15 +100,7 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
                (zprime/chunkC)**2.d0 .lt. 1.d0) then
                inChunk = .true.
                unkArr(TEMP_VAR) = sim_tempPerturb
-
-               do l = 1, npts
-                   if (xx .lt. pos_vec(l)) then
-                       coeff = (xx - pos_vec(l-1))/(pos_vec(l) - pos_vec(l-1))
-                       unkArr(PRES_VAR) = pres_vec(l-1) + coeff*(pres_vec(l) - pres_vec(l-1))
-                       exit
-                   endif
-               enddo
-
+               unkArr(PRES_VAR) = sim_presAmbient
                eosData(EOS_DENS) = sim_rhoPerturb !guess
                eosData(EOS_TEMP) = unkArr(TEMP_VAR)
                eosData(EOS_PRES) = unkArr(PRES_VAR)
@@ -131,27 +115,29 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
        endif
     enddo
     if (.not. inChunk) then
-        do l = 1, npts
-            if (xx .lt. pos_vec(l)) then
-                coeff = (xx - pos_vec(l-1))/(pos_vec(l) - pos_vec(l-1))
-                unkArr(DENS_VAR) = (dens_vec(l-1) + coeff*(dens_vec(l) - dens_vec(l-1)))
-                unkArr(TEMP_VAR) = (temp_vec(l-1) + coeff*(temp_vec(l) - temp_vec(l-1)))
-                exit
-            endif
-        enddo
-        if (xx .lt. sim_xAtm) then
-            unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xfHot
-            call sim_ranmar(sim_ranSeed, rvec, 3)
-            unkArr(VELX_VAR) = sim_rotVel*(sim_noiseAmplitude*(1.0 - 2.0 * rvec(1)))
-            unkArr(VELY_VAR) = sim_rotVel*(1.d0 + sim_noiseAmplitude*(1.0 - 2.0 * rvec(2)))
-            unkArr(VELZ_VAR) = sim_rotVel*(sim_noiseAmplitude*(1.0 - 2.0 * rvec(3)))
-        else
-            unkArr(VELX_VAR) = 0.d0
-            unkArr(VELY_VAR) = sim_rotVel !0.d0
-            unkArr(VELZ_VAR) = 0.d0
-            unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xfAmb
-            unkArr(CORE_MSCALAR) = 1.d0
+        if (NDIM .EQ. 1) then
+           cloudDist = xx - sim_xCenterCloud
+        else if (NDIM .EQ. 2) then
+           cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
+                 &          (yy - sim_yCenterPerturb)**2)
+        elseif (NDIM .EQ. 3) then
+           cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
+                 &          (yy - sim_yCenterPerturb)**2 + &
+                 &          (zz - sim_zCenterPerturb)**2)
         endif
+
+        ! set the temperature, density, and x-velocity
+        if (cloudDist .LE. cloudRad) then
+             unkArr(DENS_VAR) = sim_rhoCloud
+             unkArr(TEMP_VAR) = sim_tempCloud
+        else
+             unkArr(DENS_VAR) = sim_rhoAmbient
+             unkArr(TEMP_VAR) = sim_tempAmbient
+        endif
+        unkArr(VELX_VAR) = 0.d0
+        unkArr(VELY_VAR) = 0.d0
+        unkArr(VELZ_VAR) = 0.d0
+        unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xfAmb
     endif
 
     !  Need input of density and temperature

@@ -122,11 +122,13 @@ subroutine Simulation_init()
      call RuntimeParameters_get('hne20', sim_hne20)
      call RuntimeParameters_get('hsi28', sim_hsi28)
      call RuntimeParameters_get('hfe54', sim_hfe54)
-     call RuntimeParameters_get('xAtm', sim_xAtm)
      call RuntimeParameters_get('rhoAmbient', sim_rhoAmbient)
      call RuntimeParameters_get('rhoPerturb', sim_rhoPerturb)
+     call RuntimeParameters_get('rhoCloud', sim_rhoCloud)
      call RuntimeParameters_get('tempAmbient', sim_tempAmbient)
      call RuntimeParameters_get('tempPerturb', sim_tempPerturb)
+     call RuntimeParameters_get('tempCloud', sim_tempCloud)
+     call RuntimeParameters_get('presAmbient', sim_presAmbient)
      call RuntimeParameters_get('velxAmbient', sim_velxAmbient)
      call RuntimeParameters_get('velPerturb', sim_velPerturb)
      call RuntimeParameters_get('rotVel', sim_rotVel)
@@ -140,6 +142,7 @@ subroutine Simulation_init()
      call RuntimeParameters_get('noiseAmplitude', sim_noiseAmplitude)
      call RuntimeParameters_get('noiseDistance', sim_noiseDistance)
      call RuntimeParameters_get('usePseudo1d', sim_usePseudo1d)
+     call RuntimeParameters_get('xCenterCloud', sim_xCenterCloud)
      call RuntimeParameters_get('xCenterPerturb', sim_xCenterPerturb)
      call RuntimeParameters_get('yCenterPerturb', sim_yCenterPerturb)
      call RuntimeParameters_get('zCenterPerturb', sim_zCenterPerturb)
@@ -156,7 +159,6 @@ subroutine Simulation_init()
 
 !! Generate atmosphere profile
      
-
      sim_chunkAngle = PI/180.d0*sim_chunkAngle
 
      sim_xf(:)    = sim_smallx 
@@ -199,8 +201,6 @@ subroutine Simulation_init()
          if (FE54_SPEC > 0) sim_xfHot(FE54_SPEC) = max(sim_hfe54,sim_smallx)
 #endif
      endif
-
-     call User_calculateAtmosphere()
 
 !! Driver_abort stamps to logfile
      if (sim_meshMe == MASTER_PE) then
