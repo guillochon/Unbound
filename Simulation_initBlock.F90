@@ -150,8 +150,6 @@ subroutine Simulation_initBlock(blockID)
            call Grid_putPointData(blockID,CENTER,VELY_VAR,EXTERIOR,iPosition,unkArr(VELY_VAR))
            call Grid_putPointData(blockID,CENTER,VELZ_VAR,EXTERIOR,iPosition,unkArr(VELZ_VAR))
 
-           call Grid_putPointData(blockID,CENTER,CORE_MSCALAR,EXTERIOR,iPosition,unkArr(CORE_MSCALAR))
-
            do n = SPECIES_BEGIN,SPECIES_END
               call Grid_putPointData(blockID,CENTER,n,EXTERIOR,iPosition,unkArr(n))
            enddo

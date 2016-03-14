@@ -18,8 +18,7 @@ REQUIRES Multispecies
 REQUESTS IO   # because Lynn is tired of setting up simulations that don't do anything
 REQUIRES IO/IOMain/hdf5/parallel/PM
 #REQUIRES IO/IOMain/hdf5/serial/PM
-REQUIRES flashUtilities/numericalRecipes
-REQUIRES Grid/GridBoundaryConditions/OneRow
+#REQUIRES Grid/GridBoundaryConditions/OneRow
 
 D    xhe4          	mass fraction of he4
 D    xc12          	mass fraction of c12
@@ -81,6 +80,7 @@ PARAMETER velPerturb       REAL    1.0E9
 PARAMETER rhoCloud         REAL    1.0E-20
 PARAMETER tempCloud        REAL    1.0E4
 PARAMETER xCenterCloud     REAL    0.0
+PARAMETER cloudRadius      REAL    3.0E17
 
 PARAMETER nChunks          INTEGER 1
 PARAMETER chunkEllipticity REAL   0.0

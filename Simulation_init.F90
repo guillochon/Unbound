@@ -27,7 +27,6 @@
 !!    xo16               mass fraction of o16
 !!    rhoAmbient         density of the cold upstream material 
 !!    tempAmbient        temperature of the cold upstream material
-!!    velxAmbient        x-velocity of the cold upstream material
 !!    rhoPerturb         density of the post shock material
 !!    tempPerturb        temperature of the post shock material
 !!    velxPerturb        x-velocity of the post shock material
@@ -66,7 +65,6 @@ subroutine Simulation_init()
   use RuntimeParameters_interface, ONLY : RuntimeParameters_get
   use Logfile_interface, ONLY : Logfile_stamp
   use Driver_data, ONLY : dr_restart
-  use User_interface, ONLY : User_calculateAtmosphere
 
   implicit none
 
@@ -128,8 +126,6 @@ subroutine Simulation_init()
      call RuntimeParameters_get('tempAmbient', sim_tempAmbient)
      call RuntimeParameters_get('tempPerturb', sim_tempPerturb)
      call RuntimeParameters_get('tempCloud', sim_tempCloud)
-     call RuntimeParameters_get('presAmbient', sim_presAmbient)
-     call RuntimeParameters_get('velxAmbient', sim_velxAmbient)
      call RuntimeParameters_get('velPerturb', sim_velPerturb)
      call RuntimeParameters_get('rotVel', sim_rotVel)
      call RuntimeParameters_get('nChunks', sim_nChunks)
@@ -142,6 +138,7 @@ subroutine Simulation_init()
      call RuntimeParameters_get('noiseAmplitude', sim_noiseAmplitude)
      call RuntimeParameters_get('noiseDistance', sim_noiseDistance)
      call RuntimeParameters_get('usePseudo1d', sim_usePseudo1d)
+     call RuntimeParameters_get('cloudRadius', sim_cloudRadius)
      call RuntimeParameters_get('xCenterCloud', sim_xCenterCloud)
      call RuntimeParameters_get('xCenterPerturb', sim_xCenterPerturb)
      call RuntimeParameters_get('yCenterPerturb', sim_yCenterPerturb)
@@ -157,8 +154,6 @@ subroutine Simulation_init()
 
      sim_ranSeed = iseed - sim_meshMe
 
-!! Generate atmosphere profile
-     
      sim_chunkAngle = PI/180.d0*sim_chunkAngle
 
      sim_xf(:)    = sim_smallx 
@@ -246,7 +241,6 @@ subroutine Simulation_init()
         print *, ' '
         print *, 'upstream density        = ', sim_rhoAmbient
         print *, 'upstream temperature    = ', sim_tempAmbient
-        print *, 'upstream velocity       = ', sim_velxAmbient
         print *, ' '
         print *, 'post shock density      = ', sim_rhoPerturb
         print *, 'post shock temperature  = ', sim_tempPerturb

@@ -19,7 +19,6 @@
 !!    xo16               mass fraction of o16
 !!    rhoAmbient         density of the cold upstream material 
 !!    tempAmbient        temperature of the cold upstream material
-!!    velxAmbient        x-velocity of the cold upstream material
 !!    rhoPerturb         density of the post shock material
 !!    tempPerturb        temperature of the post shock material
 !!    velxPerturb        x-velocity of the post shock material
@@ -74,11 +73,12 @@ module Simulation_data
      real, save :: sim_hh1, sim_hhe4, sim_hc12, sim_ho16, sim_hne20, sim_hsi28, sim_hfe54
 
      ! ambient parameters
-     real, save :: sim_rhoAmbient, sim_tempAmbient, sim_velxAmbient
+     real, save :: sim_rhoAmbient, sim_tempAmbient
      ! perturbed parameters
      real, save :: sim_rhoPerturb, sim_tempPerturb, sim_velPerturb, sim_velyPerturb
 
-     real, save :: sim_xAtm
+     real, save :: sim_xCenterCloud, sim_rhoCloud, sim_tempCloud, &
+                   sim_cloudRadius
      
      !  noise added to perturbation 
      real, save :: sim_noiseAmplitude, sim_noiseDistance
@@ -103,7 +103,7 @@ module Simulation_data
      real, dimension(SPECIES_BEGIN:SPECIES_END) :: sim_xfAmb, sim_xf, sim_xfHot
 
      integer, parameter :: npts = 10000
-     real, dimension(npts) :: pos_vec, dens_vec, pres_vec, temp_vec
+     real, dimension(npts) :: pos_vec, dens_vec, temp_vec
 ! -------------------------------------------------------------------------------------
 
 
