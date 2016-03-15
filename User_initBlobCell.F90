@@ -6,7 +6,7 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
        sim_chunkEllipticity, sim_chunkAngle, sim_chunkSeparation, &
        temp_vec, sim_xf, sim_xfAmb, sim_xfHot, &
        sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, &
-       sim_cloudScaleHeights
+       sim_cloudScaleHeights, sim_velSpreadUDS
     use Eos_interface, ONLY : Eos
     use Grid_data, ONLY: gr_meshMe
     implicit none
@@ -100,7 +100,7 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
                unkArr(DENS_VAR) = sim_rhoUDS
                unkArr(TEMP_VAR) = sim_tempUDS
                ! Add expansion here
-               unkArr(VELX_VAR) = sim_velMedianUDS + sim_velSpread*xprime/chunkA
+               unkArr(VELX_VAR) = sim_velMedianUDS + sim_velSpreadUDS*xprime/chunkA
                unkArr(VELY_VAR) = 0.d0
                unkArr(VELZ_VAR) = 0.d0
                unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xf
