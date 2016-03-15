@@ -78,7 +78,7 @@ module Simulation_data
      real, save :: sim_rhoPerturb, sim_tempPerturb, sim_velPerturb, sim_velyPerturb
 
      real, save :: sim_xCenterCloud, sim_rhoCloud, sim_tempCloud, &
-                   sim_cloudRadius
+                   sim_cloudRadius, sim_cloudScaleHeights
      
      !  noise added to perturbation 
      real, save :: sim_noiseAmplitude, sim_noiseDistance

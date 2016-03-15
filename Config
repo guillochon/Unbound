@@ -45,60 +45,61 @@ SPECIES NE20
 SPECIES SI28
 SPECIES FE54
 
-PARAMETER xh1              REAL    0.0 [0.0 to 1.0]
-PARAMETER xhe4             REAL    0.0 [0.0 to 1.0]
-PARAMETER xc12             REAL    1.0 [0.0 to 1.0]
-PARAMETER xo16             REAL    0.0 [0.0 to 1.0]
-PARAMETER xne20            REAL    0.0 [0.0 to 1.0]
-PARAMETER xsi28            REAL    0.0 [0.0 to 1.0]
-PARAMETER xfe54            REAL    0.0 [0.0 to 1.0]
+PARAMETER xh1               REAL    0.0 [0.0 to 1.0]
+PARAMETER xhe4              REAL    0.0 [0.0 to 1.0]
+PARAMETER xc12              REAL    1.0 [0.0 to 1.0]
+PARAMETER xo16              REAL    0.0 [0.0 to 1.0]
+PARAMETER xne20             REAL    0.0 [0.0 to 1.0]
+PARAMETER xsi28             REAL    0.0 [0.0 to 1.0]
+PARAMETER xfe54             REAL    0.0 [0.0 to 1.0]
 
-PARAMETER ah1              REAL    0.0 [0.0 to 1.0]
-PARAMETER ahe4             REAL    0.0 [0.0 to 1.0]
-PARAMETER ac12             REAL    1.0 [0.0 to 1.0]
-PARAMETER ao16             REAL    0.0 [0.0 to 1.0]
-PARAMETER ane20            REAL    0.0 [0.0 to 1.0]
-PARAMETER asi28            REAL    0.0 [0.0 to 1.0]
-PARAMETER afe54            REAL    0.0 [0.0 to 1.0]
+PARAMETER ah1               REAL    0.0 [0.0 to 1.0]
+PARAMETER ahe4              REAL    0.0 [0.0 to 1.0]
+PARAMETER ac12              REAL    1.0 [0.0 to 1.0]
+PARAMETER ao16              REAL    0.0 [0.0 to 1.0]
+PARAMETER ane20             REAL    0.0 [0.0 to 1.0]
+PARAMETER asi28             REAL    0.0 [0.0 to 1.0]
+PARAMETER afe54             REAL    0.0 [0.0 to 1.0]
 
-PARAMETER hh1              REAL    0.0 [0.0 to 1.0]
-PARAMETER hhe4             REAL    0.0 [0.0 to 1.0]
-PARAMETER hc12             REAL    1.0 [0.0 to 1.0]
-PARAMETER ho16             REAL    0.0 [0.0 to 1.0]
-PARAMETER hne20            REAL    0.0 [0.0 to 1.0]
-PARAMETER hsi28            REAL    0.0 [0.0 to 1.0]
-PARAMETER hfe54            REAL    0.0 [0.0 to 1.0]
+PARAMETER hh1               REAL    0.0 [0.0 to 1.0]
+PARAMETER hhe4              REAL    0.0 [0.0 to 1.0]
+PARAMETER hc12              REAL    1.0 [0.0 to 1.0]
+PARAMETER ho16              REAL    0.0 [0.0 to 1.0]
+PARAMETER hne20             REAL    0.0 [0.0 to 1.0]
+PARAMETER hsi28             REAL    0.0 [0.0 to 1.0]
+PARAMETER hfe54             REAL    0.0 [0.0 to 1.0]
 
-PARAMETER rhoAmbient       REAL    1.0E-24 [0 to ]
-PARAMETER tempAmbient      REAL    1.0E6 [0 to ]
-PARAMETER velxAmbient      REAL    0.0
+PARAMETER rhoAmbient        REAL    1.0E-24 [0 to ]
+PARAMETER tempAmbient       REAL    1.0E6 [0 to ]
+PARAMETER velxAmbient       REAL    0.0
 
-PARAMETER rhoPerturb       REAL    1.0E-18
-PARAMETER tempPerturb      REAL    1.0E4
-PARAMETER velPerturb       REAL    1.0E9
+PARAMETER rhoPerturb        REAL    1.0E-18
+PARAMETER tempPerturb       REAL    1.0E4
+PARAMETER velPerturb        REAL    1.0E9
 
-PARAMETER rhoCloud         REAL    1.0E-20
-PARAMETER tempCloud        REAL    1.0E4
-PARAMETER xCenterCloud     REAL    0.0
-PARAMETER cloudRadius      REAL    3.0E17
+PARAMETER rhoCloud          REAL    1.0E-20
+PARAMETER tempCloud         REAL    1.0E4
+PARAMETER xCenterCloud      REAL    0.0
+PARAMETER cloudRadius       REAL    3.0E17
+PARAMETER cloudScaleHeights REAL    3.0
 
-PARAMETER nChunks          INTEGER 1
-PARAMETER chunkEllipticity REAL   0.0
-PARAMETER chunkAngle       REAL   0.0
-PARAMETER chunkSeparation  REAL   3.0
-PARAMETER rotVel           REAL   0.0
+PARAMETER nChunks           INTEGER 1
+PARAMETER chunkEllipticity  REAL   0.0
+PARAMETER chunkAngle        REAL   0.0
+PARAMETER chunkSeparation   REAL   3.0
+PARAMETER rotVel            REAL   0.0
 
-PARAMETER radiusPerturb    REAL    25.6
-PARAMETER xCenterPerturb   REAL    0.0
-PARAMETER yCenterPerturb   REAL    0.0
-PARAMETER zCenterPerturb   REAL    0.0
+PARAMETER radiusPerturb     REAL    25.6
+PARAMETER xCenterPerturb    REAL    0.0
+PARAMETER yCenterPerturb    REAL    0.0
+PARAMETER zCenterPerturb    REAL    0.0
 
-PARAMETER virTemp          REAL    1.e8
-PARAMETER virDens          REAL    1.e5
+PARAMETER virTemp           REAL    1.e8
+PARAMETER virDens           REAL    1.e5
 
-PARAMETER vCirc            REAL    0.e0
+PARAMETER vCirc             REAL    0.e0
 
-PARAMETER usePseudo1d      BOOLEAN FALSE
+PARAMETER usePseudo1d       BOOLEAN FALSE
 
-PARAMETER noiseAmplitude   REAL    1.0e-2
-PARAMETER noiseDistance    REAL    5.0
+PARAMETER noiseAmplitude    REAL    1.0e-2
+PARAMETER noiseDistance     REAL    5.0

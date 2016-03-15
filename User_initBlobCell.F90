@@ -5,7 +5,8 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
        pos_vec, dens_vec, npts, sim_velyPerturb, sim_nChunks, sim_cloudRadius, &
        sim_chunkEllipticity, sim_chunkAngle, sim_chunkSeparation, &
        temp_vec, sim_xf, sim_xfAmb, sim_xfHot, sim_virTemp, sim_virDens, &
-       sim_noiseAmplitude, sim_ranSeed, sim_rhoCloud, sim_tempCloud, sim_xCenterCloud
+       sim_noiseAmplitude, sim_ranSeed, sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, &
+       sim_cloudScaleHeights
     use Eos_interface, ONLY : Eos
     use Grid_data, ONLY: gr_meshMe
     implicit none
@@ -98,6 +99,7 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
                inChunk = .true.
                unkArr(DENS_VAR) = sim_rhoPerturb
                unkArr(TEMP_VAR) = sim_tempPerturb
+               ! Add expansion here
                unkArr(VELX_VAR) = sim_velPerturb
                unkArr(VELY_VAR) = 0.d0
                unkArr(VELZ_VAR) = 0.d0
@@ -107,23 +109,24 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
     enddo
     if (.not. inChunk) then
         if (NDIM .EQ. 1) then
-           cloudDist = xx - sim_xCenterCloud
+            cloudDist = xx - sim_xCenterCloud
         else if (NDIM .EQ. 2) then
-           cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
-                 &          (yy - sim_yCenterPerturb)**2)
+            cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
+                  &          (yy - sim_yCenterPerturb)**2)
         elseif (NDIM .EQ. 3) then
-           cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
-                 &          (yy - sim_yCenterPerturb)**2 + &
-                 &          (zz - sim_zCenterPerturb)**2)
+            cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
+                  &          (yy - sim_yCenterPerturb)**2 + &
+                  &          (zz - sim_zCenterPerturb)**2)
         endif
 
         ! set the temperature, density, and x-velocity
         if (cloudDist .LE. sim_cloudRadius) then
-             unkArr(DENS_VAR) = sim_rhoCloud
-             unkArr(TEMP_VAR) = sim_tempCloud
+            unkArr(DENS_VAR) = max(sim_rhoCloud*dexp(-(sim_cloudScaleHeights*cloudDist/sim_cloudRadius)**2), &
+                                   sim_rhoAmbient)
+            unkArr(TEMP_VAR) = sim_tempCloud
         else
-             unkArr(DENS_VAR) = sim_rhoAmbient
-             unkArr(TEMP_VAR) = sim_tempAmbient
+            unkArr(DENS_VAR) = sim_rhoAmbient
+            unkArr(TEMP_VAR) = sim_tempAmbient
         endif
         unkArr(VELX_VAR) = 0.d0
         unkArr(VELY_VAR) = 0.d0
