@@ -31,7 +31,6 @@ D    tempUDS     	temperature of the post shock material
 D    velxUDS     	x-velocity of the post shock material
 D    radiusUDS     	distance below which the perturbation is applied
 D    x/y/zCenterUDS origin of the of the perturbation
-D    usePseudo1d     	.true. for a 1d initial configuration, with the 
 D &                        copied along the y and z directions
 D &                	.false. for a spherical configuration
 D    noiseAmplitude    	amplitude of the white noise added to the perturbation
@@ -77,6 +76,7 @@ PARAMETER rhoUDS            REAL    1.0E-18
 PARAMETER tempUDS           REAL    1.0E4
 PARAMETER velMedianUDS      REAL    7.0E8
 PARAMETER velSpreadUDS      REAL    3.0E8
+PARAMETER velExpansionUDS   REAL    1.0E6
 
 PARAMETER rhoCloud          REAL    1.0E-20
 PARAMETER tempCloud         REAL    1.0E4
@@ -88,16 +88,11 @@ PARAMETER nChunks           INTEGER 1
 PARAMETER chunkEllipticity  REAL   0.0
 PARAMETER chunkAngle        REAL   0.0
 PARAMETER chunkSeparation   REAL   3.0
-PARAMETER rotVel            REAL   0.0
 
 PARAMETER radiusUDS         REAL    25.6
 PARAMETER xCenterUDS        REAL    0.0
 PARAMETER yCenterUDS        REAL    0.0
 PARAMETER zCenterUDS        REAL    0.0
-
-PARAMETER vCirc             REAL    0.e0
-
-PARAMETER usePseudo1d       BOOLEAN FALSE
 
 PARAMETER noiseAmplitude    REAL    1.0e-2
 PARAMETER noiseDistance     REAL    5.0

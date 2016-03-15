@@ -26,7 +26,6 @@
 !!    xCenterUDS     origin of the of the perturbation
 !!    yCenterUDS     origin of the of the perturbation
 !!    zCenterUDS     origin of the of the perturbation
-!!    usePseudo1d        .true. for a 1d initial configuration, with the ??
 !!                          copied along the y and z directions
 !!                       .false. for a spherical configuration
 !!    noiseAmplitude     amplitude of the white noise added to the perturbation
@@ -74,26 +73,18 @@ module Simulation_data
 
      ! ambient parameters
      real, save :: sim_rhoAmbient, sim_tempAmbient
-     ! perturbed parameters
-     real, save :: sim_rhoUDS, sim_tempUDS, sim_velMedianUDS, sim_velSpreadUDS
 
+     ! UDS parameters
+     real, save :: sim_rhoUDS, sim_tempUDS, sim_velMedianUDS, sim_velSpreadUDS, &
+                   sim_velExpansionUDS, &
+                   sim_xCenterUDS, sim_yCenterUDS, sim_zCenterUDS
+     integer, save :: sim_nChunks
+     real, save :: sim_chunkEllipticity, sim_chunkSeparation, sim_chunkAngle
+
+     ! cloud parameters
      real, save :: sim_xCenterCloud, sim_rhoCloud, sim_tempCloud, &
                    sim_cloudRadius, sim_cloudScaleHeights
      
-     logical, save :: sim_usePseudo1d    ! initial conditions depend only upon distance in x
-
-     ! center of perturbation
-     real, save :: sim_xCenterUDS, sim_yCenterUDS, sim_zCenterUDS
-
-     integer, save :: sim_nChunks
-
-     real, save :: sim_chunkEllipticity, sim_chunkSeparation, sim_chunkAngle
-     real, save :: sim_vCirc
-
-     real, save :: sim_rotVel
-
-     integer, save :: sim_ranSeed
-
      ! physical ranges of domain
      real, save :: sim_xmin, sim_xmax, sim_ymin, sim_ymax, sim_zmin, sim_zmax  
 

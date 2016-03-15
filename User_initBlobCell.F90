@@ -1,12 +1,12 @@
 subroutine User_initBlobCell(xx, yy, zz, unkArr)
-    use Simulation_data, ONLY: sim_smallRho, sim_smallx, sim_radiusUDS, sim_usePseudo1d, &
+    use Simulation_data, ONLY: sim_smallRho, sim_smallx, sim_radiusUDS, &
        sim_rhoUDS, sim_tempUDS, sim_velMedianUDS, sim_rhoAmbient, sim_tempAmbient, &
        sim_xCenterUDS, sim_yCenterUDS, sim_zCenterUDS, &
        pos_vec, dens_vec, npts, sim_nChunks, sim_cloudRadius, &
        sim_chunkEllipticity, sim_chunkAngle, sim_chunkSeparation, &
        temp_vec, sim_xf, sim_xfAmb, sim_xfHot, &
        sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, &
-       sim_cloudScaleHeights, sim_velSpreadUDS
+       sim_cloudScaleHeights, sim_velSpreadUDS, sim_velExpansionUDS
     use Eos_interface, ONLY : Eos
     use Grid_data, ONLY: gr_meshMe
     implicit none
@@ -56,20 +56,12 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
            if (NDIM .EQ. 1) then
               dists(i) = xx - (sim_xCenterUDS + (i-1)*xOffset)
            else if (NDIM .EQ. 2) then
-              if (sim_usePseudo1d) then
-                 dists(i) = xx - sim_xCenterUDS
-              else
-                 dists(i) = sqrt((xx - (sim_xCenterUDS + (i-1)*xOffset))**2 + & 
-                      &          (yy - (sim_yCenterUDS + (i-1)*yOffset))**2)
-              endif
+              dists(i) = sqrt((xx - (sim_xCenterUDS + (i-1)*xOffset))**2 + & 
+                   &          (yy - (sim_yCenterUDS + (i-1)*yOffset))**2)
            elseif (NDIM .EQ. 3) then
-              if (sim_usePseudo1d) then
-                 dists(i) = xx - sim_xCenterUDS
-              else
-                 dists(i) = sqrt((xx - (sim_xCenterUDS + (i-1)*xOffset))**2 + & 
-                      &          (yy - (sim_yCenterUDS + (i-1)*yOffset))**2 + &
-                      &          (zz - sim_zCenterUDS)**2)
-              endif
+              dists(i) = sqrt((xx - (sim_xCenterUDS + (i-1)*xOffset))**2 + & 
+                   &          (yy - (sim_yCenterUDS + (i-1)*yOffset))**2 + &
+                   &          (zz - sim_zCenterUDS)**2)
            endif
 
            ! set the temperature, density, and velocity
@@ -100,9 +92,13 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
                unkArr(DENS_VAR) = sim_rhoUDS
                unkArr(TEMP_VAR) = sim_tempUDS
                ! Add expansion here
-               unkArr(VELX_VAR) = sim_velMedianUDS + sim_velSpreadUDS*xprime/chunkA
-               unkArr(VELY_VAR) = 0.d0
-               unkArr(VELZ_VAR) = 0.d0
+               unkArr(VELX_VAR) = sim_velMedianUDS + sim_velSpreadUDS*xprime/chunkA + &
+                                  dsqrt(yprime**2 + zprime**2)/sim_radiusUDS*sim_velExpansionUDS*&
+                                  dsin(sim_chunkAngle)*dcos(datan2(zprime,yprime))
+               unkArr(VELY_VAR) = dsqrt(yprime**2 + zprime**2)/sim_radiusUDS*sim_velExpansionUDS*&
+                                  dcos(sim_chunkAngle)*dcos(datan2(zprime,yprime))
+               unkArr(VELZ_VAR) = dsqrt(yprime**2 + zprime**2)/sim_radiusUDS*sim_velExpansionUDS*&
+                                  dcos(sim_chunkAngle)*dsin(datan2(zprime,yprime))
                unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xf
            endif
        endif

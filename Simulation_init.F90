@@ -34,7 +34,6 @@
 !!    xCenterUDS     origin of the of the perturbation
 !!    yCenterUDS     origin of the of the perturbation
 !!    zCenterUDS     origin of the of the perturbation
-!!    usePseudo1d        .true. for a 1d initial configuration, with the ??
 !!                          copied along the y and z directions
 !!                       .false. for a spherical configuration
 !!    xmax               boundary of domain
@@ -118,13 +117,10 @@ subroutine Simulation_init()
      call RuntimeParameters_get('hne20', sim_hne20)
      call RuntimeParameters_get('hsi28', sim_hsi28)
      call RuntimeParameters_get('hfe54', sim_hfe54)
-     call RuntimeParameters_get('rotVel', sim_rotVel)
      call RuntimeParameters_get('nChunks', sim_nChunks)
      call RuntimeParameters_get('chunkSeparation', sim_chunkSeparation)
      call RuntimeParameters_get('chunkAngle', sim_chunkAngle)
      call RuntimeParameters_get('chunkEllipticity', sim_chunkEllipticity)
-     call RuntimeParameters_get('vCirc', sim_vCirc)
-     call RuntimeParameters_get('usePseudo1d', sim_usePseudo1d)
 
      call RuntimeParameters_get('rhoAmbient', sim_rhoAmbient)
      call RuntimeParameters_get('tempAmbient', sim_tempAmbient)
@@ -142,6 +138,7 @@ subroutine Simulation_init()
      call RuntimeParameters_get('tempUDS', sim_tempUDS)
      call RuntimeParameters_get('velMedianUDS', sim_velMedianUDS)
      call RuntimeParameters_get('velSpreadUDS', sim_velSpreadUDS)
+     call RuntimeParameters_get('velExpansionUDS', sim_velExpansionUDS)
 
      call RuntimeParameters_get('xmin', sim_xmin)
      call RuntimeParameters_get('xmax', sim_xmax)
@@ -149,10 +146,6 @@ subroutine Simulation_init()
      call RuntimeParameters_get('ymax', sim_ymax)
      call RuntimeParameters_get('zmin', sim_zmin)
      call RuntimeParameters_get('zmax', sim_zmax)
-
-!! Seed random number generator
-
-     sim_ranSeed = iseed - sim_meshMe
 
      sim_chunkAngle = PI/180.d0*sim_chunkAngle
 
