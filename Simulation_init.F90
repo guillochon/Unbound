@@ -130,6 +130,7 @@ subroutine Simulation_init()
      call RuntimeParameters_get('cloudScaleHeights', sim_cloudScaleHeights)
      call RuntimeParameters_get('cloudRadius', sim_cloudRadius)
      call RuntimeParameters_get('xCenterCloud', sim_xCenterCloud)
+     call RuntimeParameters_get('yCenterCloud', sim_yCenterCloud)
 
      call RuntimeParameters_get('xCenterUDS', sim_xCenterUDS)
      call RuntimeParameters_get('yCenterUDS', sim_yCenterUDS)

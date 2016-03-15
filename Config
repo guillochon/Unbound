@@ -83,6 +83,7 @@ PARAMETER velExpansionUDS    REAL    1.0E6
 PARAMETER rhoCloud           REAL    1.0E-20
 PARAMETER tempCloud          REAL    1.0E4
 PARAMETER xCenterCloud       REAL    0.0
+PARAMETER yCenterCloud       REAL    0.0
 PARAMETER cloudRadius        REAL    3.0E17
 PARAMETER cloudScaleHeights  REAL    3.0
 

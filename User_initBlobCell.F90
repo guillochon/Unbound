@@ -5,7 +5,7 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
        pos_vec, dens_vec, npts, sim_nChunks, sim_cloudRadius, &
        sim_chunkEllipticity, sim_chunkAngle, sim_chunkSeparation, &
        temp_vec, sim_xf, sim_xfAmb, sim_xfHot, sim_rhoSpreadUDS, &
-       sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, &
+       sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, sim_yCenterCloud, &
        sim_cloudScaleHeights, sim_velSpreadUDS, sim_velExpansionUDS, &
        sim_rhoScaleHeightsUDS
     use Eos_interface, ONLY : Eos
@@ -23,7 +23,7 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
     integer, allocatable :: dists(:)
     integer :: i, l
     real :: chunkRad, chunkA, chunkB, chunkC, xOffset, yOffset, coeff, distx, &
-            disty, distz, xprime, yprime, zprime, cloudDist
+            disty, distz, xprime, yprime, yzprime, zprime, cloudDist
     real, dimension(EOS_NUM)  :: eosData
     real, dimension(3) :: rvec
 
@@ -86,21 +86,22 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
            xprime = distx*dcos(sim_chunkAngle) + disty*dsin(sim_chunkAngle)
            yprime = disty*dcos(sim_chunkAngle) - distx*dsin(sim_chunkAngle)
            zprime = distz
+           yzprime = sqrt(yprime**2 + zprime**2)
            if ((xprime/chunkA)**2.d0 + &
                (yprime/chunkB)**2.d0 + &
                (zprime/chunkC)**2.d0 .lt. 1.d0) then
                inChunk = .true.
-               unkArr(DENS_VAR) = (sim_rhoUDS - sim_rhoSpreadUDS*xprime/chunkA)* &
-                                  dexp(-sim_rhoScaleHeightsUDS**2*(yprime**2 + zprime**2) &
-                                  /chunkB**2)
+               unkArr(DENS_VAR) = max(sim_rhoAmbient, (sim_rhoUDS - sim_rhoSpreadUDS*xprime/chunkA)* &
+                                  dexp(-sim_rhoScaleHeightsUDS**2*yzprime**2 &
+                                  /(chunkB*dsin(dacos(xprime/chunkA)))**2))
                unkArr(TEMP_VAR) = sim_tempUDS
                ! Add expansion here
                unkArr(VELX_VAR) = sim_velMedianUDS + sim_velSpreadUDS*xprime/chunkA + &
-                                  dsqrt(yprime**2 + zprime**2)/chunkB*sim_velExpansionUDS*&
+                                  yzprime/chunkB*sim_velExpansionUDS*&
                                   dsin(sim_chunkAngle)*dcos(datan2(zprime,yprime))
-               unkArr(VELY_VAR) = dsqrt(yprime**2 + zprime**2)/chunkB*sim_velExpansionUDS*&
+               unkArr(VELY_VAR) = yzprime/chunkB*sim_velExpansionUDS*&
                                   dcos(sim_chunkAngle)*dcos(datan2(zprime,yprime))
-               unkArr(VELZ_VAR) = dsqrt(yprime**2 + zprime**2)/chunkB*sim_velExpansionUDS*&
+               unkArr(VELZ_VAR) = yzprime/chunkB*sim_velExpansionUDS*&
                                   dcos(sim_chunkAngle)*dsin(datan2(zprime,yprime))
                unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xf
            endif
@@ -111,10 +112,10 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
             cloudDist = xx - sim_xCenterCloud
         else if (NDIM .EQ. 2) then
             cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
-                  &          (yy - sim_yCenterUDS)**2)
+                  &          (yy - sim_yCenterCloud)**2)
         elseif (NDIM .EQ. 3) then
             cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
-                  &          (yy - sim_yCenterUDS)**2 + &
+                  &          (yy - sim_yCenterCloud)**2 + &
                   &          (zz - sim_zCenterUDS)**2)
         endif
 

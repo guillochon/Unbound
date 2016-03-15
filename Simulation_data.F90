@@ -82,7 +82,7 @@ module Simulation_data
      real, save :: sim_chunkEllipticity, sim_chunkSeparation, sim_chunkAngle
 
      ! cloud parameters
-     real, save :: sim_xCenterCloud, sim_rhoCloud, sim_tempCloud, &
+     real, save :: sim_xCenterCloud, sim_yCenterCloud, sim_rhoCloud, sim_tempCloud, &
                    sim_cloudRadius, sim_cloudScaleHeights
      
      ! physical ranges of domain
