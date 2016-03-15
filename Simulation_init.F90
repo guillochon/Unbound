@@ -27,18 +27,16 @@
 !!    xo16               mass fraction of o16
 !!    rhoAmbient         density of the cold upstream material 
 !!    tempAmbient        temperature of the cold upstream material
-!!    rhoPerturb         density of the post shock material
-!!    tempPerturb        temperature of the post shock material
-!!    velxPerturb        x-velocity of the post shock material
-!!    radiusPerturb      distance below which the perturbation is applied
-!!    xCenterPerturb     origin of the of the perturbation
-!!    yCenterPerturb     origin of the of the perturbation
-!!    zCenterPerturb     origin of the of the perturbation
+!!    rhoUDS         density of the post shock material
+!!    tempUDS        temperature of the post shock material
+!!    velxUDS        x-velocity of the post shock material
+!!    radiusUDS      distance below which the perturbation is applied
+!!    xCenterUDS     origin of the of the perturbation
+!!    yCenterUDS     origin of the of the perturbation
+!!    zCenterUDS     origin of the of the perturbation
 !!    usePseudo1d        .true. for a 1d initial configuration, with the ??
 !!                          copied along the y and z directions
 !!                       .false. for a spherical configuration
-!!    noiseAmplitude     amplitude of the white noise added to the perturbation
-!!    noiseDistance      distances above and below radiusPerturb get noise added
 !!    xmax               boundary of domain
 !!    xmin               boundary of domain
 !!    ymax               boundary of domain
@@ -98,7 +96,7 @@ subroutine Simulation_init()
      call Driver_getMype(MESH_COMM, sim_meshMe)
      call RuntimeParameters_get('smallx', sim_smallx)
      call RuntimeParameters_get('smlrho', sim_smallRho)
-     call RuntimeParameters_get('radiusPerturb', sim_radiusPerturb)
+     call RuntimeParameters_get('radiusUDS', sim_radiusUDS)
      call RuntimeParameters_get('xh1', sim_xh1)
      call RuntimeParameters_get('xhe4', sim_xhe4)
      call RuntimeParameters_get('xc12', sim_xc12)
@@ -120,30 +118,31 @@ subroutine Simulation_init()
      call RuntimeParameters_get('hne20', sim_hne20)
      call RuntimeParameters_get('hsi28', sim_hsi28)
      call RuntimeParameters_get('hfe54', sim_hfe54)
-     call RuntimeParameters_get('rhoAmbient', sim_rhoAmbient)
-     call RuntimeParameters_get('rhoPerturb', sim_rhoPerturb)
-     call RuntimeParameters_get('rhoCloud', sim_rhoCloud)
-     call RuntimeParameters_get('tempAmbient', sim_tempAmbient)
-     call RuntimeParameters_get('tempPerturb', sim_tempPerturb)
-     call RuntimeParameters_get('tempCloud', sim_tempCloud)
-     call RuntimeParameters_get('cloudScaleHeights', sim_cloudScaleHeights)
-     call RuntimeParameters_get('velPerturb', sim_velPerturb)
      call RuntimeParameters_get('rotVel', sim_rotVel)
      call RuntimeParameters_get('nChunks', sim_nChunks)
      call RuntimeParameters_get('chunkSeparation', sim_chunkSeparation)
      call RuntimeParameters_get('chunkAngle', sim_chunkAngle)
      call RuntimeParameters_get('chunkEllipticity', sim_chunkEllipticity)
-     call RuntimeParameters_get('virTemp', sim_virTemp)
-     call RuntimeParameters_get('virDens', sim_virDens)
      call RuntimeParameters_get('vCirc', sim_vCirc)
-     call RuntimeParameters_get('noiseAmplitude', sim_noiseAmplitude)
-     call RuntimeParameters_get('noiseDistance', sim_noiseDistance)
      call RuntimeParameters_get('usePseudo1d', sim_usePseudo1d)
+
+     call RuntimeParameters_get('rhoAmbient', sim_rhoAmbient)
+     call RuntimeParameters_get('tempAmbient', sim_tempAmbient)
+
+     call RuntimeParameters_get('rhoCloud', sim_rhoCloud)
+     call RuntimeParameters_get('tempCloud', sim_tempCloud)
+     call RuntimeParameters_get('cloudScaleHeights', sim_cloudScaleHeights)
      call RuntimeParameters_get('cloudRadius', sim_cloudRadius)
      call RuntimeParameters_get('xCenterCloud', sim_xCenterCloud)
-     call RuntimeParameters_get('xCenterPerturb', sim_xCenterPerturb)
-     call RuntimeParameters_get('yCenterPerturb', sim_yCenterPerturb)
-     call RuntimeParameters_get('zCenterPerturb', sim_zCenterPerturb)
+
+     call RuntimeParameters_get('xCenterUDS', sim_xCenterUDS)
+     call RuntimeParameters_get('yCenterUDS', sim_yCenterUDS)
+     call RuntimeParameters_get('zCenterUDS', sim_zCenterUDS)
+     call RuntimeParameters_get('rhoUDS', sim_rhoUDS)
+     call RuntimeParameters_get('tempUDS', sim_tempUDS)
+     call RuntimeParameters_get('velMedianUDS', sim_velMedianUDS)
+     call RuntimeParameters_get('velSpreadUDS', sim_velSpreadUDS)
+
      call RuntimeParameters_get('xmin', sim_xmin)
      call RuntimeParameters_get('xmax', sim_xmax)
      call RuntimeParameters_get('ymin', sim_ymin)
@@ -209,26 +208,26 @@ subroutine Simulation_init()
         !   call Driver_abortFlash('ERROR Simulation_init: smlrho is too high')
         !endif
 
-        if (sim_xCenterPerturb .GT. sim_xmax .OR. sim_xCenterPerturb .LT. sim_xmin) then
-           print *, 'Error: xCenterPerturb must fall between xmin and xmax'
-           call Driver_abortFlash('ERROR Simulation_init: xCenterPerturb must fall between xmin and xmax')
+        if (sim_xCenterUDS .GT. sim_xmax .OR. sim_xCenterUDS .LT. sim_xmin) then
+           print *, 'Error: xCenterUDS must fall between xmin and xmax'
+           call Driver_abortFlash('ERROR Simulation_init: xCenterUDS must fall between xmin and xmax')
         endif
 
-        if (sim_yCenterPerturb .GT. sim_ymax .OR. sim_yCenterPerturb .LT. sim_ymin) then
-           print *, 'Error: yCenterPerturb must fall between ymin and ymax'
-           call Driver_abortFlash('ERROR Simulation_init: yCenterPerturb must fall between ymin and ymax')
+        if (sim_yCenterUDS .GT. sim_ymax .OR. sim_yCenterUDS .LT. sim_ymin) then
+           print *, 'Error: yCenterUDS must fall between ymin and ymax'
+           call Driver_abortFlash('ERROR Simulation_init: yCenterUDS must fall between ymin and ymax')
         endif
 
-        if ((sim_zCenterPerturb .GT. sim_zmax .OR. sim_zCenterPerturb .LT. sim_zmin)  & 
+        if ((sim_zCenterUDS .GT. sim_zmax .OR. sim_zCenterUDS .LT. sim_zmin)  & 
              &              .AND. NDIM .EQ. 3) then
-           print *, 'Error: zCenterPerturb must fall between zmin and zmax'
-           call Driver_abortFlash('ERROR Simulation_init: zCenterPerturb must fall between zmin and zmax')
+           print *, 'Error: zCenterUDS must fall between zmin and zmax'
+           call Driver_abortFlash('ERROR Simulation_init: zCenterUDS must fall between zmin and zmax')
         endif
 
-        call Logfile_stamp( "initializing for cellular detonation", &
+        call Logfile_stamp( "initializing for UDS simulation", &
              "[Simulation_init]")
         print *, 'flash: ', NDIM,  & 
-             &           ' dimensional cellular detonation initialization'
+             &           ' dimensional UDS initialization'
         print *, ' '
         print *, 'hydrogen mass fraction  = ', sim_xh1
         print *, 'helium mass fraction    = ', sim_xhe4
@@ -240,20 +239,18 @@ subroutine Simulation_init()
         print *, 'ambient carbon mass fraction    = ', sim_ac12
         print *, 'ambient oxygen mass fraction    = ', sim_ao16
         print *, ' '
-        print *, 'upstream density        = ', sim_rhoAmbient
-        print *, 'upstream temperature    = ', sim_tempAmbient
+        print *, 'ambient density         = ', sim_rhoAmbient
+        print *, 'ambient temperature     = ', sim_tempAmbient
         print *, ' '
-        print *, 'post shock density      = ', sim_rhoPerturb
-        print *, 'post shock temperature  = ', sim_tempPerturb
-        print *, 'perturb velocity        = ', sim_velPerturb
+        print *, 'UDS density             = ', sim_rhoUDS
+        print *, 'UDS temperature         = ', sim_tempUDS
+        print *, 'UDS median velocity     = ', sim_velMedianUDS
+        print *, 'UDS spread in velocity  = ', sim_velSpreadUDS
         print *, ' '
-        print *, 'post shock distance     = ', sim_radiusPerturb
-        print *, 'x center                = ', sim_xCenterPerturb
-        print *, 'y center                = ', sim_yCenterPerturb
-        print *, 'z center                = ', sim_zCenterPerturb
-        print *, ' '
-        print *, 'noise amplitude         = ', sim_noiseAmplitude
-        print *, 'noise distance          = ', sim_noiseDistance
+        print *, 'post shock distance     = ', sim_radiusUDS
+        print *, 'x center                = ', sim_xCenterUDS
+        print *, 'y center                = ', sim_yCenterUDS
+        print *, 'z center                = ', sim_zCenterUDS
         print *, ' '
      endif
 

@@ -1,4 +1,4 @@
-!!****if* source/Simulation/SimulationMain/Cellular/Simulation_data
+!!****if* source/Simulation/SimulationMain/Unbound/Simulation_data
 !!
 !! NAME
 !!  Simulation_data
@@ -19,18 +19,18 @@
 !!    xo16               mass fraction of o16
 !!    rhoAmbient         density of the cold upstream material 
 !!    tempAmbient        temperature of the cold upstream material
-!!    rhoPerturb         density of the post shock material
-!!    tempPerturb        temperature of the post shock material
-!!    velxPerturb        x-velocity of the post shock material
-!!    radiusPerturb      distance below which the perturbation is applied
-!!    xCenterPerturb     origin of the of the perturbation
-!!    yCenterPerturb     origin of the of the perturbation
-!!    zCenterPerturb     origin of the of the perturbation
+!!    rhoUDS         density of the post shock material
+!!    tempUDS        temperature of the post shock material
+!!    velxUDS        x-velocity of the post shock material
+!!    radiusUDS      distance below which the perturbation is applied
+!!    xCenterUDS     origin of the of the perturbation
+!!    yCenterUDS     origin of the of the perturbation
+!!    zCenterUDS     origin of the of the perturbation
 !!    usePseudo1d        .true. for a 1d initial configuration, with the ??
 !!                          copied along the y and z directions
 !!                       .false. for a spherical configuration
 !!    noiseAmplitude     amplitude of the white noise added to the perturbation
-!!    noiseDistance      distances above and below radiusPerturb get noise added
+!!    noiseDistance      distances above and below radiusUDS get noise added
 !!    xmax               boundary of domain
 !!    xmin               boundary of domain
 !!    ymax               boundary of domain
@@ -65,7 +65,7 @@ module Simulation_data
 ! ---- Runtime Parameters -------------------------
 
      real, save :: sim_smallRho, sim_smallx  ! minimum values of parameters
-     real, save :: sim_radiusPerturb     ! influence range of perturbation
+     real, save :: sim_radiusUDS     ! influence range of perturbation
 
      ! initial mass fractions
      real, save :: sim_xh1, sim_xhe4, sim_xc12, sim_xo16, sim_xne20, sim_xsi28, sim_xfe54
@@ -75,23 +75,20 @@ module Simulation_data
      ! ambient parameters
      real, save :: sim_rhoAmbient, sim_tempAmbient
      ! perturbed parameters
-     real, save :: sim_rhoPerturb, sim_tempPerturb, sim_velPerturb, sim_velyPerturb
+     real, save :: sim_rhoUDS, sim_tempUDS, sim_velMedianUDS, sim_velSpreadUDS
 
      real, save :: sim_xCenterCloud, sim_rhoCloud, sim_tempCloud, &
                    sim_cloudRadius, sim_cloudScaleHeights
      
-     !  noise added to perturbation 
-     real, save :: sim_noiseAmplitude, sim_noiseDistance
-
      logical, save :: sim_usePseudo1d    ! initial conditions depend only upon distance in x
 
      ! center of perturbation
-     real, save :: sim_xCenterPerturb, sim_yCenterPerturb, sim_zCenterPerturb
+     real, save :: sim_xCenterUDS, sim_yCenterUDS, sim_zCenterUDS
 
      integer, save :: sim_nChunks
 
      real, save :: sim_chunkEllipticity, sim_chunkSeparation, sim_chunkAngle
-     real, save :: sim_virTemp, sim_virDens, sim_vCirc
+     real, save :: sim_vCirc
 
      real, save :: sim_rotVel
 

@@ -1,11 +1,11 @@
 subroutine User_initBlobCell(xx, yy, zz, unkArr)
-    use Simulation_data, ONLY: sim_smallRho, sim_smallx, sim_radiusPerturb, sim_usePseudo1d, &
-       sim_rhoPerturb, sim_tempPerturb, sim_velPerturb, sim_rhoAmbient, sim_tempAmbient, &
-       sim_xCenterPerturb, sim_yCenterPerturb, sim_zCenterPerturb, &
-       pos_vec, dens_vec, npts, sim_velyPerturb, sim_nChunks, sim_cloudRadius, &
+    use Simulation_data, ONLY: sim_smallRho, sim_smallx, sim_radiusUDS, sim_usePseudo1d, &
+       sim_rhoUDS, sim_tempUDS, sim_velMedianUDS, sim_rhoAmbient, sim_tempAmbient, &
+       sim_xCenterUDS, sim_yCenterUDS, sim_zCenterUDS, &
+       pos_vec, dens_vec, npts, sim_nChunks, sim_cloudRadius, &
        sim_chunkEllipticity, sim_chunkAngle, sim_chunkSeparation, &
-       temp_vec, sim_xf, sim_xfAmb, sim_xfHot, sim_virTemp, sim_virDens, &
-       sim_noiseAmplitude, sim_ranSeed, sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, &
+       temp_vec, sim_xf, sim_xfAmb, sim_xfHot, &
+       sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, &
        sim_cloudScaleHeights
     use Eos_interface, ONLY : Eos
     use Grid_data, ONLY: gr_meshMe
@@ -33,9 +33,9 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
     inChunk = .false.
     if (sim_nChunks .eq. 1) then
        sim_nChunks = 1
-       chunkRad = sim_radiusPerturb
+       chunkRad = sim_radiusUDS
     else
-       chunkRad = sim_radiusPerturb / (dble(sim_nChunks)**(1.d0/3.d0))
+       chunkRad = sim_radiusUDS / (dble(sim_nChunks)**(1.d0/3.d0))
     endif
 
     if (sim_chunkEllipticity .ne. 0.d0) then
@@ -54,30 +54,30 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
        if (inChunk) exit
        if (sim_chunkEllipticity .eq. 0.d0) then
            if (NDIM .EQ. 1) then
-              dists(i) = xx - (sim_xCenterPerturb + (i-1)*xOffset)
+              dists(i) = xx - (sim_xCenterUDS + (i-1)*xOffset)
            else if (NDIM .EQ. 2) then
               if (sim_usePseudo1d) then
-                 dists(i) = xx - sim_xCenterPerturb
+                 dists(i) = xx - sim_xCenterUDS
               else
-                 dists(i) = sqrt((xx - (sim_xCenterPerturb + (i-1)*xOffset))**2 + & 
-                      &          (yy - (sim_yCenterPerturb + (i-1)*yOffset))**2)
+                 dists(i) = sqrt((xx - (sim_xCenterUDS + (i-1)*xOffset))**2 + & 
+                      &          (yy - (sim_yCenterUDS + (i-1)*yOffset))**2)
               endif
            elseif (NDIM .EQ. 3) then
               if (sim_usePseudo1d) then
-                 dists(i) = xx - sim_xCenterPerturb
+                 dists(i) = xx - sim_xCenterUDS
               else
-                 dists(i) = sqrt((xx - (sim_xCenterPerturb + (i-1)*xOffset))**2 + & 
-                      &          (yy - (sim_yCenterPerturb + (i-1)*yOffset))**2 + &
-                      &          (zz - sim_zCenterPerturb)**2)
+                 dists(i) = sqrt((xx - (sim_xCenterUDS + (i-1)*xOffset))**2 + & 
+                      &          (yy - (sim_yCenterUDS + (i-1)*yOffset))**2 + &
+                      &          (zz - sim_zCenterUDS)**2)
               endif
            endif
 
            ! set the temperature, density, and velocity
            if (dists(i) .LE. chunkRad) then
               inChunk = .true.
-              unkArr(DENS_VAR) = sim_rhoPerturb
-              unkArr(TEMP_VAR) = sim_tempPerturb
-              unkArr(VELX_VAR) = sim_velPerturb
+              unkArr(DENS_VAR) = sim_rhoUDS
+              unkArr(TEMP_VAR) = sim_tempUDS
+              unkArr(VELX_VAR) = sim_velMedianUDS
               unkArr(VELY_VAR) = 0.d0
               unkArr(VELZ_VAR) = 0.d0
               unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xf
@@ -86,9 +86,9 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
            if (NDIM .NE. 3) then
               call Driver_abortFlash('Error: Chunk Ellipticity only supports 3 dimensions')
            endif
-           distx = xx - (sim_xCenterPerturb + (i-1)*xOffset)
-           disty = yy - (sim_yCenterPerturb + (i-1)*yOffset)
-           distz = zz - sim_zCenterPerturb
+           distx = xx - (sim_xCenterUDS + (i-1)*xOffset)
+           disty = yy - (sim_yCenterUDS + (i-1)*yOffset)
+           distz = zz - sim_zCenterUDS
             
            xprime = distx*dcos(sim_chunkAngle) + disty*dsin(sim_chunkAngle)
            yprime = disty*dcos(sim_chunkAngle) - distx*dsin(sim_chunkAngle)
@@ -97,10 +97,10 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
                (yprime/chunkB)**2.d0 + &
                (zprime/chunkC)**2.d0 .lt. 1.d0) then
                inChunk = .true.
-               unkArr(DENS_VAR) = sim_rhoPerturb
-               unkArr(TEMP_VAR) = sim_tempPerturb
+               unkArr(DENS_VAR) = sim_rhoUDS
+               unkArr(TEMP_VAR) = sim_tempUDS
                ! Add expansion here
-               unkArr(VELX_VAR) = sim_velPerturb
+               unkArr(VELX_VAR) = sim_velMedianUDS + sim_velSpread*xprime/chunkA
                unkArr(VELY_VAR) = 0.d0
                unkArr(VELZ_VAR) = 0.d0
                unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xf
@@ -112,11 +112,11 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
             cloudDist = xx - sim_xCenterCloud
         else if (NDIM .EQ. 2) then
             cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
-                  &          (yy - sim_yCenterPerturb)**2)
+                  &          (yy - sim_yCenterUDS)**2)
         elseif (NDIM .EQ. 3) then
             cloudDist = sqrt((xx - sim_xCenterCloud)**2 + & 
-                  &          (yy - sim_yCenterPerturb)**2 + &
-                  &          (zz - sim_zCenterPerturb)**2)
+                  &          (yy - sim_yCenterUDS)**2 + &
+                  &          (zz - sim_zCenterUDS)**2)
         endif
 
         ! set the temperature, density, and x-velocity
