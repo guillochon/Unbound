@@ -72,8 +72,9 @@ PARAMETER rhoAmbient        REAL    1.0E-24 [0 to ]
 PARAMETER tempAmbient       REAL    1.0E6 [0 to ]
 PARAMETER velxAmbient       REAL    0.0
 
-PARAMETER rhoUDS            REAL    1.0E-18
-PARAMETER tempUDS           REAL    1.0E4
+PARAMETER rhoUDS            REAL    3.0E-20
+PARAMETER rhoSpreadUDS      REAL    3.0E-20
+PARAMETER tempUDS           REAL    1.0E2
 PARAMETER velMedianUDS      REAL    7.0E8
 PARAMETER velSpreadUDS      REAL    3.0E8
 PARAMETER velExpansionUDS   REAL    1.0E6

@@ -76,7 +76,7 @@ module Simulation_data
 
      ! UDS parameters
      real, save :: sim_rhoUDS, sim_tempUDS, sim_velMedianUDS, sim_velSpreadUDS, &
-                   sim_velExpansionUDS, &
+                   sim_velExpansionUDS, sim_rhoSpreadUDS, &
                    sim_xCenterUDS, sim_yCenterUDS, sim_zCenterUDS
      integer, save :: sim_nChunks
      real, save :: sim_chunkEllipticity, sim_chunkSeparation, sim_chunkAngle

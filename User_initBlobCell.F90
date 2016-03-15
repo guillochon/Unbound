@@ -4,7 +4,7 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
        sim_xCenterUDS, sim_yCenterUDS, sim_zCenterUDS, &
        pos_vec, dens_vec, npts, sim_nChunks, sim_cloudRadius, &
        sim_chunkEllipticity, sim_chunkAngle, sim_chunkSeparation, &
-       temp_vec, sim_xf, sim_xfAmb, sim_xfHot, &
+       temp_vec, sim_xf, sim_xfAmb, sim_xfHot, sim_rhoSpreadUDS, &
        sim_rhoCloud, sim_tempCloud, sim_xCenterCloud, &
        sim_cloudScaleHeights, sim_velSpreadUDS, sim_velExpansionUDS
     use Eos_interface, ONLY : Eos
@@ -89,15 +89,15 @@ subroutine User_initBlobCell(xx, yy, zz, unkArr)
                (yprime/chunkB)**2.d0 + &
                (zprime/chunkC)**2.d0 .lt. 1.d0) then
                inChunk = .true.
-               unkArr(DENS_VAR) = sim_rhoUDS
+               unkArr(DENS_VAR) = sim_rhoUDS - sim_rhoSpreadUDS*xprime/chunkA
                unkArr(TEMP_VAR) = sim_tempUDS
                ! Add expansion here
                unkArr(VELX_VAR) = sim_velMedianUDS + sim_velSpreadUDS*xprime/chunkA + &
-                                  dsqrt(yprime**2 + zprime**2)/sim_radiusUDS*sim_velExpansionUDS*&
+                                  dsqrt(yprime**2 + zprime**2)/chunkB*sim_velExpansionUDS*&
                                   dsin(sim_chunkAngle)*dcos(datan2(zprime,yprime))
-               unkArr(VELY_VAR) = dsqrt(yprime**2 + zprime**2)/sim_radiusUDS*sim_velExpansionUDS*&
+               unkArr(VELY_VAR) = dsqrt(yprime**2 + zprime**2)/chunkB*sim_velExpansionUDS*&
                                   dcos(sim_chunkAngle)*dcos(datan2(zprime,yprime))
-               unkArr(VELZ_VAR) = dsqrt(yprime**2 + zprime**2)/sim_radiusUDS*sim_velExpansionUDS*&
+               unkArr(VELZ_VAR) = dsqrt(yprime**2 + zprime**2)/chunkB*sim_velExpansionUDS*&
                                   dcos(sim_chunkAngle)*dsin(datan2(zprime,yprime))
                unkArr(SPECIES_BEGIN:SPECIES_END) = sim_xf
            endif
